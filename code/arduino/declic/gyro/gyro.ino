@@ -143,12 +143,12 @@ void loop(){
     Serial.print(" ");
     Serial.println(Y.stable_time);
 
-    if (X.stable_time > 10*10000) {
+    if (X.stable_time > 30*100000) {
       X.dX = X.val;
       X.stable_time = 0;
     }
     
-    if (Y.stable_time > 10*10000) {
+    if (Y.stable_time > 30*100000) {
       Y.dY = Y.val;
       Y.stable_time = 0;
     }
