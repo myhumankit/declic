@@ -90,7 +90,8 @@ void convert() {
 X_infos X;
 Y_infos Y;
 
-#define SENSITIVITY 3
+#define SENSITIVITY 20
+#define STABILITY 3*1000000
 
 void loop(){
 
@@ -111,7 +112,7 @@ void loop(){
     // get X value
     X_axis = filter.getRoll()-180;
     if (X_axis < - 180) { X_axis = X_axis + 360; }
-    X_axis = map(X_axis,  -180, 180, 36, -36);
+    X_axis = map(X_axis,  -180, 180, 360, -360);
 
     // compare to old X value
     if (abs(X_axis - X.val) < SENSITIVITY) {
@@ -125,7 +126,7 @@ void loop(){
 
     // get Y value
     Y_axis = filter.getPitch();
-    Y_axis = map(Y_axis, -180, 180, 36, -36);
+    Y_axis = map(Y_axis, -180, 180, 360, -360);
 
     // compare to old Y value
     if (abs(Y_axis - Y.val) < SENSITIVITY) {
@@ -143,15 +144,18 @@ void loop(){
     Serial.print(" ");
     Serial.println(Y.stable_time);
 
-    if (X.stable_time > 30*100000) {
+    if (X.stable_time > STABILITY && Y.stable_time > STABILITY) {
       X.dX = X.val;
       X.stable_time = 0;
-    }
-    
-    if (Y.stable_time > 30*100000) {
+
       Y.dY = Y.val;
       Y.stable_time = 0;
     }
+    
+    //if (Y.stable_time > 30*100000) {
+      //Y.dY = Y.val;
+      //Y.stable_time = 0;
+    //}
 
     Mouse.move(-(X.val - X.dX), (Y.val - Y.dY), 0);
 
