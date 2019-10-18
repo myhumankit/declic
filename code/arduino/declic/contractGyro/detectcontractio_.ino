@@ -45,7 +45,7 @@ void setup()
 float convertRawAcceleration(int aRaw) {
   // we are using 1G range, -1g maps to a raw value of -32768 and +1g maps to a raw value of 32767
   
-  float a = (aRaw * 1.0) / 32768.0;
+  float a = (aRaw * 2.0) / 32768.0;
   return a;
 }
 
@@ -114,14 +114,10 @@ void loop() {
     // update the filter, which computes orientation
     filter.updateIMU(gx, gy, gz, ax, ay, az);
 
-		// get sensibility
-		int sensibility = analogRead(A2);
-	  int sensibility_range = map(sensibility, 0, 1023, 0, 720);
-
     // get X value
     X_axis = filter.getRoll()-180;
     if (X_axis < - 180) { X_axis = X_axis + 360; }
-    X_axis = map(X_axis,  -180, 180, sensibility_range, -sensibility_range);
+    X_axis = map(X_axis,  -180, 180, 360, -360);
 
     // compare to old X value
     if (abs(X_axis - X.val) < SENSITIVITY) {
@@ -135,7 +131,7 @@ void loop() {
 
     // get Y value
     Y_axis = filter.getPitch();
-    Y_axis = map(Y_axis, -180, 180, sensibility_range, -sensibility_range);
+    Y_axis = map(Y_axis, -180, 180, 360, -360);
 
     // compare to old Y value
     if (abs(Y_axis - Y.val) < SENSITIVITY) {
