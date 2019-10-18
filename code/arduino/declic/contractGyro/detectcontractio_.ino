@@ -2,7 +2,9 @@
 #include <MHK_Button.h>
 #include <Wire.h>
 #include <MadgwickAHRS.h>
+#include <SoftwareSerial.h>
 
+SoftwareSerial mySerial(11,10);
 VirtualButton bouton(LOW);
 
 struct Axis_infos {
@@ -40,6 +42,10 @@ void setup()
   filter.begin(25);
 	microsPerReading = 1000000 / 25;
   microsPrevious = micros();
+
+	pinMode(11,INPUT);
+	pinMode(10,OUTPUT);
+	mySerial.begin(9600);
 }
 
 float convertRawAcceleration(int aRaw) {
@@ -92,6 +98,22 @@ bool is_hold = 0;
 bool is_long_press = 0;
 bool long_press_end = 0;
 int contraction_seuil = 400;
+
+char data_to_send = 'a';
+// DICTIONARY
+// 'a' = nothing
+// 'b' = up
+// 'c' = upleft
+// 'd' = upright
+// 'e' = down
+// 'f' = downleft
+// 'g' = downright
+// 'h' = left
+// 'i' = right
+// 'j' = clickleft
+// 'k' = clickright
+// 'l' = longclickstart
+// 'm' = longclickstop
 
 void loop() {
 
@@ -155,7 +177,32 @@ void loop() {
       Y.stable_time = 0;
     }
 
-    Mouse.move(-(X.val - X.delta), (Y.val - Y.delta), 0);
+    // Mouse.move(-(X.val - X.delta), (Y.val - Y.delta), 0);
+
+		int Xdata = -(X.val - X.delta);
+		int Ydata = Y.val - Y.delta;
+
+		if (Ydata > 20)
+			if (Xdata > 20)
+				data_to_send = 'd';
+			else if (Xdata < -20);
+				data_to_send = 'c';
+			else
+				data_to_send = 'b';
+		else if (Ydata < -20)
+			if (Xdata > 20)
+				data_to_send = 'g';
+			else if (Xdata < -20)
+				data_to_send = 'f';
+			else
+				data_to_send = 'e';
+		else
+			if (Xdata > 20)
+				data_to_send = 'i';
+			else if (Xdata < -20)
+				data_to_send = 'h';
+			else 
+				data_to_send = 'a';
 
     // increment previous time, so we keep proper pace
     microsPrevious = microsPrevious + microsPerReading;
@@ -180,7 +227,9 @@ void loop() {
 	  }
 
 		if (is_hold and (millis() > HOLD_RIGHT_TIME + start_time)) {
-	    Mouse.press();
+			if (data_to_send == 'a')
+				data_to_send = 'l';
+		    //Mouse.press();
 	    is_hold = 0;
 	    is_long_press = 1;
 	  }
@@ -188,13 +237,17 @@ void loop() {
 		if (bouton.released()) {
 	    if (is_hold) {
 	      if (millis() < HOLD_RIGHT_TIME + start_time) {
-	        Mouse.click(MOUSE_RIGHT);
+					if (data_to_send == 'a')
+						data_to_send = 'k';
+	        //Mouse.click(MOUSE_RIGHT);
 	      }
 	      is_hold = 0;
 		  }
 			else {
 				if ((not is_long_press) and (not long_press_end)) {
-	        Mouse.click();
+	        if (data_to_send == 'a')
+						data_to_send = 'j';_
+						//Mouse.click();
 	      }
 	    }
 	    long_press_end = 0;
@@ -203,6 +256,12 @@ void loop() {
 	  if (bouton.pressed() and is_long_press) {
 		  is_long_press = 0;
 	    long_press_end = 1;
-	    Mouse.release();
+	    if (data_to_send == 'a')
+				data_to_send = 'm';
+				//Mouse.release();
 	  }
+		
+		if (data_to_sent != 'a')
+			mySerial.write(data_to_send);
+
 }
