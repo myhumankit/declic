@@ -17,13 +17,7 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) { // vérifie la présence de données dans la liaison usb
-    inByte = Serial.read(); // récupère le premier octet de la mémoire tampon
-    switch (inByte) {
-      case 'a':
-        // action en cas de lecture du caractère 'a'
-        mySerial.write('b'); // envoi vers le bluetooth
-        break;
-     }
+    mySerial.write(Serial.read());
   }
   delay(100);
 }
