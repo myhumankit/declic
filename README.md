@@ -4,11 +4,11 @@ Dispositif de contrôle d'un ordinateur sans les mains !
 
 ## Documentation
 
-Ce projet a été réalisé lors du Fabrikarium 2019. Voir la documentation complète sur le [wiki de myhumankit](http://wikilab.myhumankit.org/index.php?title=Projets:Declic)
+Ce projet a été réalisé lors du Fabrikarium 2019. Voir la documentation complète sur le [wiki de myhumankit](http://wikilab.myhumankit.org/index.php?title=Projets:Declic).
 
 ## Liens vers les fichiers par scénarios
 
-Quatre scénarios ont été développé qui demandait chacun soit de la programmation arduino, soit de la modélisation, soit les deux.
+Quatre scénarios ont été développés qui demandaient chacun soit de la programmation arduino, soit de la modélisation, soit les deux.
  
 ### Scénario S1
 
